@@ -432,6 +432,32 @@ async def vps_check_payment(order_id: str) -> bool | None:
         return None
 
 
+# ─── Отправка заявки на доставку UC ───
+async def vps_deliver(game_id: str, user_id: int, order_id: str, deliver_index: int, offer_id: str) -> bool:
+    try:
+        session = await get_http_session()
+        async with session.post(
+            f"{VPS_API_URL}/deliver",
+            json={
+                "secret": API_SECRET,
+                "game_id": game_id,
+                "user_id": user_id,
+                "order_id": order_id,
+                "deliver_index": deliver_index,
+                "offer_id": offer_id,
+            },
+        ) as resp:
+            if resp.status != 200:
+                text = await resp.text()
+                logger.error(f"VPS /deliver #{deliver_index} ({offer_id}) вернул HTTP {resp.status}: {text[:200]}")
+                return False
+            data = await resp.json()
+            return bool(data.get("success", False))
+    except Exception as e:
+        logger.error(f"Ошибка доставки UC (заявка #{deliver_index}, offer={offer_id}): {e}")
+        return False
+
+
 # ─── Отправка отзыва в группу ───
 async def send_review_to_group(text: str):
     if not REVIEW_CHAT_ID:
@@ -446,8 +472,20 @@ async def send_review_to_group(text: str):
 
 # ─── Обработка одного оплаченного заказа ───
 async def process_paid_order(order_id: str, info: dict):
-    """Списание баланса и уведомление по одному подтверждённому заказу."""
+    """Отправка товара, списание баланса и уведомление по одному подтверждённому заказу."""
+    deliveries = info.get("deliveries", ["60_uc"])
+    game_id = info.get("game_id", "")
+    delivery_user_id = info.get("user_id", 0)
     amount_kopecks = info.get("amount_kopecks", 0)
+
+    # Параллельная отправка всех частей заказа
+    tasks = [
+        vps_deliver(game_id, delivery_user_id, order_id, i + 1, offer_id)
+        for i, offer_id in enumerate(deliveries)
+    ]
+    await asyncio.gather(*tasks, return_exceptions=True)
+
+    logger.info(f"Отправка товара для {order_id} завершена (без проверки ошибок)")
 
     # ─── Списание баланса ───
     global kotshop_balance
