@@ -29,7 +29,7 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 VPS_API_URL = os.getenv("VPS_API_URL")
 API_SECRET = os.getenv("API_SECRET", "change-me")
 
-# ─── ИЗМЕНЕНО: группа отзывов по умолчанию ───
+# ─── Группа отзывов по умолчанию ───
 REVIEW_CHAT_ID = os.getenv("REVIEW_CHAT_ID", "@otzivkotshop241")
 
 # ─── БАЛАНС: список ID администраторов (через запятую в .env) ───
@@ -53,7 +53,7 @@ logger.info(f"REVIEW_CHAT_ID задан: {'да' if REVIEW_CHAT_ID else 'НЕТ'
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
-# ─── Глобальный HTTP-сессия для переиспользования соединений ───
+# ─── Глобальная HTTP-сессия для переиспользования соединений ───
 http_session: aiohttp.ClientSession | None = None
 
 
@@ -67,21 +67,23 @@ async def get_http_session() -> aiohttp.ClientSession:
     return http_session
 
 
-# ─── Каталог товаров (+1% к цене) ───
-PRICE_MARKUP = 1.01  # накрутка 1%
+# ─── Каталог товаров ───
+PRICE_MARKUP = 1.01  # накрутка 1% для недоступных товаров (на будущее)
 
 def _apply_markup(price: int) -> int:
     """Применяет 1% наценки и округляет вверх до целого рубля."""
     return math.ceil(price * PRICE_MARKUP)
 
-# ─── НОВОЕ: список товаров, доступных для покупки ───
+# ─── Список товаров, доступных для покупки ───
 ALLOWED_PRODUCTS = {"60uc", "120uc", "180uc", "240uc"}
 
 PRODUCTS = {
-    "60uc":   {"name": "60 UC",   "price": _apply_markup(82),   "amount_kopecks": _apply_markup(82)   * 100, "deliveries": ["60_uc"]},
-    "120uc":  {"name": "120 UC",  "price": _apply_markup(164),  "amount_kopecks": _apply_markup(164)  * 100, "deliveries": ["60_uc", "60_uc"]},
-    "180uc":  {"name": "180 UC",  "price": _apply_markup(246),  "amount_kopecks": _apply_markup(246)  * 100, "deliveries": ["60_uc", "60_uc", "60_uc"]},
-    "240uc":  {"name": "240 UC",  "price": _apply_markup(328),  "amount_kopecks": _apply_markup(328)  * 100, "deliveries": ["60_uc", "60_uc", "60_uc", "60_uc"]},
+    # ── Доступные товары: фиксированные цены ──
+    "60uc":   {"name": "60 UC",   "price": 85,  "amount_kopecks": 85  * 100, "deliveries": ["60_uc"]},
+    "120uc":  {"name": "120 UC",  "price": 171, "amount_kopecks": 171 * 100, "deliveries": ["60_uc", "60_uc"]},
+    "180uc":  {"name": "180 UC",  "price": 258, "amount_kopecks": 258 * 100, "deliveries": ["60_uc", "60_uc", "60_uc"]},
+    "240uc":  {"name": "240 UC",  "price": 345, "amount_kopecks": 345 * 100, "deliveries": ["60_uc", "60_uc", "60_uc", "60_uc"]},
+    # ── Недоступные товары: цены с наценкой (на будущее) ──
     "325uc":  {"name": "325 UC",  "price": _apply_markup(410),  "amount_kopecks": _apply_markup(410)  * 100, "deliveries": ["325_uc"]},
     "385uc":  {"name": "385 UC",  "price": _apply_markup(502),  "amount_kopecks": _apply_markup(502)  * 100, "deliveries": ["325_uc", "60_uc"]},
     "445uc":  {"name": "445 UC",  "price": _apply_markup(575),  "amount_kopecks": _apply_markup(575)  * 100, "deliveries": ["60_uc", "60_uc", "325_uc"]},
@@ -188,11 +190,16 @@ BALANCE_INSUFFICIENT_TEXT = (
     "мы отправим товар на ваш аккаунт вручную."
 )
 
-# ─── НОВОЕ: сообщение о недоступности товара ───
+DELIVERY_ERROR_TEXT = (
+    "Оплата получена ✅, но при автоматической отправке товара возникла техническая ошибка. "
+    "Поддержка уже уведомлена — товар будет доставлен на ваш аккаунт вручную в ближайшее время. "
+    "Приносим извинения за неудобства 🙏"
+)
+
 PRODUCT_UNAVAILABLE_TEXT = (
     "Сейчас доступны к покупке пакеты UC для PUBG Mobile: 60, 120, 180 и 240 UC. "
     "Ограничение связано с временными сложностями у поставщика.\n\n"
-    "Как только ассортимент обновится — мы сразу сообщим в нашей Telegram‑группе. 😊"
+    "Как только ассортимент обновится — мы сразу сообщим в нашей Telegram-группе. 😊"
 )
 
 MENU_KW = {"меню"}
@@ -292,7 +299,7 @@ def init_keyboards():
     b.adjust(2)
     _kb_start = b.as_markup()
 
-    # ── kb_menu ── ИЗМЕНЕНО: добавлена кнопка «Отзывы» ──
+    # ── kb_menu ──
     b = InlineKeyboardBuilder()
     b.button(text="Купить", callback_data="buy")
     b.button(text="Поддержка", callback_data="support")
@@ -473,7 +480,7 @@ async def notify_admins_delivery_failed(order_id: str, info: dict, game_id: str)
         f"Заказ: {order_id}\n"
         f"Товар: {info.get('product_name', '?')}\n"
         f"Game ID: {game_id}\n"
-        f"Пользователь: {info.get('user_id', '?')}\n"
+        f"Пользователь: @{info.get('user_id', '?')}\n"
         f"Нужно доставить вручную."
     )
     for admin_id in ADMIN_IDS:
@@ -514,9 +521,7 @@ async def process_paid_order(order_id: str, info: dict):
         # Доставка провалилась — не списываем баланс, уведомляем пользователя и админов
         await bot.send_message(
             info["chat_id"],
-            "Оплата получена ✅, но при автоматической отправке товара возникла техническая ошибка. "
-            "Поддержка уже уведомлена — товар будет доставлен на ваш аккаунт вручную в ближайшее время. "
-            "Приносим извинения за неудобства 🙏",
+            DELIVERY_ERROR_TEXT,
             reply_markup=_kb_back_to_menu,
         )
         await notify_admins_delivery_failed(order_id, info, game_id)
@@ -822,7 +827,7 @@ async def cb_back_pubg(callback, state: FSMContext):
     await callback.answer()
 
 
-# ── ИЗМЕНЕНО: Универсальный обработчик выбора товара ──
+# ── Универсальный обработчик выбора товара ──
 @dp.callback_query(F.data.startswith("pubg_prod:"))
 async def cb_pubg_product(callback, state: FSMContext):
     product_key = callback.data.split(":")[1]
@@ -831,7 +836,7 @@ async def cb_pubg_product(callback, state: FSMContext):
         await callback.answer("Товар не найден")
         return
 
-    # ─── НОВОЕ: проверка, доступен ли товар для покупки ───
+    # Проверка, доступен ли товар для покупки
     if product_key not in ALLOWED_PRODUCTS:
         await callback.message.answer(PRODUCT_UNAVAILABLE_TEXT)
         await asyncio.sleep(1)
