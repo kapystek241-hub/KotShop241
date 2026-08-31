@@ -79,24 +79,24 @@ ALLOWED_PRODUCTS = {"60uc", "120uc", "180uc", "240uc"}
 
 PRODUCTS = {
     # ── Доступные товары: фиксированные цены ──
-    "60uc":   {"name": "60 UC",   "price": 85,  "amount_kopecks": 85  * 100},
-    "120uc":  {"name": "120 UC",  "price": 171, "amount_kopecks": 171 * 100},
-    "180uc":  {"name": "180 UC",  "price": 258, "amount_kopecks": 258 * 100},
-    "240uc":  {"name": "240 UC",  "price": 345, "amount_kopecks": 345 * 100},
+    "60uc":   {"name": "60 UC",   "price": 85,  "amount_kopecks": 85  * 100, "deliveries": ["60_uc"]},
+    "120uc":  {"name": "120 UC",  "price": 171, "amount_kopecks": 171 * 100, "deliveries": ["60_uc", "60_uc"]},
+    "180uc":  {"name": "180 UC",  "price": 258, "amount_kopecks": 258 * 100, "deliveries": ["60_uc", "60_uc", "60_uc"]},
+    "240uc":  {"name": "240 UC",  "price": 345, "amount_kopecks": 345 * 100, "deliveries": ["60_uc", "60_uc", "60_uc", "60_uc"]},
     # ── Недоступные товары: цены с наценкой (на будущее) ──
-    "325uc":  {"name": "325 UC",  "price": _apply_markup(410),  "amount_kopecks": _apply_markup(410)  * 100},
-    "385uc":  {"name": "385 UC",  "price": _apply_markup(502),  "amount_kopecks": _apply_markup(502)  * 100},
-    "445uc":  {"name": "445 UC",  "price": _apply_markup(575),  "amount_kopecks": _apply_markup(575)  * 100},
-    "660uc":  {"name": "660 UC",  "price": _apply_markup(819),  "amount_kopecks": _apply_markup(819)  * 100},
-    "720uc":  {"name": "720 UC",  "price": _apply_markup(902),  "amount_kopecks": _apply_markup(902)  * 100},
-    "985uc":  {"name": "985 UC",  "price": _apply_markup(1230), "amount_kopecks": _apply_markup(1230) * 100},
-    "1320uc": {"name": "1320 UC", "price": _apply_markup(1639), "amount_kopecks": _apply_markup(1639) * 100},
-    "1800uc": {"name": "1800 UC", "price": _apply_markup(2049), "amount_kopecks": _apply_markup(2049) * 100},
-    "1920uc": {"name": "1920 UC", "price": _apply_markup(2214), "amount_kopecks": _apply_markup(2214) * 100},
-    "2125uc": {"name": "2125 UC", "price": _apply_markup(2479), "amount_kopecks": _apply_markup(2479) * 100},
-    "2460uc": {"name": "2460 UC", "price": _apply_markup(2870), "amount_kopecks": _apply_markup(2870) * 100},
-    "3850uc": {"name": "3850 UC", "price": _apply_markup(4119), "amount_kopecks": _apply_markup(4119) * 100},
-    "4510uc": {"name": "4510 UC", "price": _apply_markup(4979), "amount_kopecks": _apply_markup(4979) * 100},
+    "325uc":  {"name": "325 UC",  "price": _apply_markup(410),  "amount_kopecks": _apply_markup(410)  * 100, "deliveries": ["325_uc"]},
+    "385uc":  {"name": "385 UC",  "price": _apply_markup(502),  "amount_kopecks": _apply_markup(502)  * 100, "deliveries": ["325_uc", "60_uc"]},
+    "445uc":  {"name": "445 UC",  "price": _apply_markup(575),  "amount_kopecks": _apply_markup(575)  * 100, "deliveries": ["60_uc", "60_uc", "325_uc"]},
+    "660uc":  {"name": "660 UC",  "price": _apply_markup(819),  "amount_kopecks": _apply_markup(819)  * 100, "deliveries": ["660_uc"]},
+    "720uc":  {"name": "720 UC",  "price": _apply_markup(902),  "amount_kopecks": _apply_markup(902)  * 100, "deliveries": ["660_uc", "60_uc"]},
+    "985uc":  {"name": "985 UC",  "price": _apply_markup(1230), "amount_kopecks": _apply_markup(1230) * 100, "deliveries": ["660_uc", "325_uc"]},
+    "1320uc": {"name": "1320 UC", "price": _apply_markup(1639), "amount_kopecks": _apply_markup(1639) * 100, "deliveries": ["660_uc", "660_uc"]},
+    "1800uc": {"name": "1800 UC", "price": _apply_markup(2049), "amount_kopecks": _apply_markup(2049) * 100, "deliveries": ["1800_uc"]},
+    "1920uc": {"name": "1920 UC", "price": _apply_markup(2214), "amount_kopecks": _apply_markup(2214) * 100, "deliveries": ["1800_uc", "60_uc", "60_uc"]},
+    "2125uc": {"name": "2125 UC", "price": _apply_markup(2479), "amount_kopecks": _apply_markup(2479) * 100, "deliveries": ["1800_uc", "325_uc"]},
+    "2460uc": {"name": "2460 UC", "price": _apply_markup(2870), "amount_kopecks": _apply_markup(2870) * 100, "deliveries": ["1800_uc", "660_uc"]},
+    "3850uc": {"name": "3850 UC", "price": _apply_markup(4119), "amount_kopecks": _apply_markup(4119) * 100, "deliveries": ["3850_uc"]},
+    "4510uc": {"name": "4510 UC", "price": _apply_markup(4979), "amount_kopecks": _apply_markup(4979) * 100, "deliveries": ["3850_uc", "660_uc"]},
 }
 
 PRODUCT_GRID = [
@@ -141,8 +141,9 @@ POLICY_TEXT = (
     "Любые действия, направленные на нарушение установленных правил, в том числе попытки "
     "неправомерного получения выгоды, обхода платёжных механизмов, использования "
     "мошеннических схем либо иного злоупотребления условиями предоставления услуг, "
-    "расцениваются как существенное нарушение договорных обязательств и могут служить "
-    "основанием для обращения в правоохранительные органы, а собранные материалы — быть использованы "
+    "расцениваются как существенное нарушение договорных обязательств и могут "
+    "квалифицироваться как противоправные деяния. Такие действия могут служить основанием "
+    "для обращения в правоохранительные органы, а собранные материалы — быть использованы "
     "в качестве доказательной базы в рамках административного или уголовного производства "
     "в соответствии с Уголовным кодексом Российской Федерации и Кодексом Российской "
     "Федерации об административных правонарушениях.\n\n"
@@ -179,7 +180,8 @@ REVIEW_RATING_TEXT = (
 REVIEW_WRITE_TEXT = (
     "Вы можете написать о нашем сервисе всё, что думаете — даже если "
     "хочется позлиться, мы готовы выслушать 🤬 В любом случае каждое "
-    "сообщение помогает нам стать лучше, и мы благодарны за любую обратную связь! 💬"
+    "сообщение помогает нам стать лучше, и мы благодарны за любую "
+    "обратную связь! 💬"
 )
 
 BALANCE_INSUFFICIENT_TEXT = (
@@ -189,9 +191,17 @@ BALANCE_INSUFFICIENT_TEXT = (
 )
 
 PRODUCT_UNAVAILABLE_TEXT = (
-    "Сейчас доступны к покупке пакеты UC для PUBG Mobile: 60, 120, 180 и 240 UC. "
-    "Ограничение связано с временными сложностями у поставщика.\n\n"
-    "Как только ассортимент обновится — мы сразу сообщим в нашей Telegram-группе. 😊"
+    "На данный момент доступно пополнение следующих товаров:\n"
+    "60, 120, 180, 240 UC\n\n"
+    "Причина, проблема со стороны поставщика, как только ситуация исправится — "
+    "объявлю об этом в телеграмм канале."
+)
+
+POPULARITY_TEXT = (
+    "На данный момент раздел в разработке, план на разработку:\n"
+    "Популярность можно будет получить от других покупателей в виде заработка, "
+    "о подаче заявки в виде продавца популярности для PUBG Mobile можно будет "
+    "обратиться после создания раздела и после объявления в телеграмм канале."
 )
 
 MENU_KW = {"меню"}
@@ -264,18 +274,20 @@ def load_balance():
 
 
 # ─── Кэшированные клавиатуры ───
-_kb_start:          object = None
-_kb_menu:           object = None
-_kb_buy:            object = None
-_kb_pubg:           object = None
-_kb_pubg_products:  object = None
-_kb_pubg_other:     object = None
-_kb_back_to_menu:   object = None
-_kb_policy:         object = None
-_kb_support:        object = None
-_kb_review:         object = None
-_kb_review_rating:  object = None
-_kb_review_confirm: object = None
+_kb_start:            object = None
+_kb_menu:             object = None
+_kb_buy:              object = None
+_kb_pubg:             object = None
+_kb_pubg_products:    object = None
+_kb_pubg_other:       object = None
+_kb_back_to_menu:     object = None
+_kb_policy:           object = None
+_kb_support:          object = None
+_kb_review:           object = None
+_kb_review_rating:    object = None
+_kb_review_confirm:   object = None
+_kb_unavailable_back: object = None
+_kb_popularity_back:  object = None
 
 
 def init_keyboards():
@@ -283,6 +295,7 @@ def init_keyboards():
     global _kb_start, _kb_menu, _kb_buy, _kb_pubg, _kb_pubg_products
     global _kb_pubg_other, _kb_back_to_menu, _kb_policy, _kb_support
     global _kb_review, _kb_review_rating, _kb_review_confirm
+    global _kb_unavailable_back, _kb_popularity_back
 
     # ── kb_start ──
     b = InlineKeyboardBuilder()
@@ -292,4 +305,913 @@ def init_keyboards():
     _kb_start = b.as_markup()
 
     # ── kb_menu ──
-    b = InlineKeyboard
+    b = InlineKeyboardBuilder()
+    b.button(text="Купить", callback_data="buy")
+    b.button(text="Поддержка", callback_data="support")
+    b.button(text="Отзывы", url="https://t.me/otzivkotshop241")
+    b.button(text="Турнир", callback_data="tournament")
+    b.button(text="Назад", callback_data="back_start")
+    b.adjust(2, 1, 1, 1)
+    _kb_menu = b.as_markup()
+
+    # ── kb_buy ──
+    b = InlineKeyboardBuilder()
+    b.button(text="PUBG Mobile", callback_data="pubg")
+    b.button(text="Назад", callback_data="back_menu")
+    b.adjust(1)
+    _kb_buy = b.as_markup()
+
+    # ── kb_pubg ──
+    b = InlineKeyboardBuilder()
+    b.button(text="Купить UC по ID", callback_data="pubg_buy_uc")
+    b.button(text="Другие товары", callback_data="pubg_other")
+    b.button(text="Назад", callback_data="back_buy")
+    b.adjust(1)
+    _kb_pubg = b.as_markup()
+
+    # ── kb_pubg_products ──
+    b = InlineKeyboardBuilder()
+    for key in PRODUCT_GRID:
+        product = PRODUCTS[key]
+        b.button(text=f"UC {product['name'].split(' ')[0]} — {product['price']}₽", callback_data=f"pubg_prod:{key}")
+    b.button(text="Назад", callback_data="back_pubg")
+    b.adjust(2, 2, 2, 2, 2, 2, 2, 2, 1, 1)
+    _kb_pubg_products = b.as_markup()
+
+    # ── kb_pubg_other ──
+    b = InlineKeyboardBuilder()
+    b.button(text="Популярность", callback_data="popularity")
+    b.button(text="Назад", callback_data="back_pubg")
+    b.adjust(1)
+    _kb_pubg_other = b.as_markup()
+
+    # ── kb_back_to_menu ──
+    b = InlineKeyboardBuilder()
+    b.button(text="Назад", callback_data="back_menu")
+    b.adjust(1)
+    _kb_back_to_menu = b.as_markup()
+
+    # ── kb_policy ──
+    b = InlineKeyboardBuilder()
+    b.button(text="Меню", callback_data="menu")
+    b.adjust(1)
+    _kb_policy = b.as_markup()
+
+    # ── kb_support ──
+    b = InlineKeyboardBuilder()
+    b.button(text="Поддержка", url="https://t.me/KotShop2415")
+    b.button(text="Назад", callback_data="back_menu")
+    b.adjust(1)
+    _kb_support = b.as_markup()
+
+    # ── kb_review ──
+    b = InlineKeyboardBuilder()
+    b.button(text="Оценить", callback_data="review_start")
+    b.button(text="В меню", callback_data="menu")
+    b.adjust(1)
+    _kb_review = b.as_markup()
+
+    # ── kb_review_rating ──
+    b = InlineKeyboardBuilder()
+    b.button(text="Написать отзыв", callback_data="review_write")
+    b.button(text="Отправить без текста", callback_data="review_send_stars_only")
+    b.button(text="Отменить", callback_data="review_cancel")
+    b.adjust(1)
+    _kb_review_rating = b.as_markup()
+
+    # ── kb_review_confirm ──
+    b = InlineKeyboardBuilder()
+    b.button(text="Отправить", callback_data="review_send")
+    b.button(text="Изменить текст", callback_data="review_edit_text")
+    b.button(text="Поменять оценку", callback_data="review_change_rating")
+    b.button(text="В меню", callback_data="review_to_menu")
+    b.adjust(1)
+    _kb_review_confirm = b.as_markup()
+
+    # ── kb_unavailable_back — кнопка "Назад" для недоступных товаров ──
+    b = InlineKeyboardBuilder()
+    b.button(text="Назад", callback_data="pubg_buy_uc")
+    b.adjust(1)
+    _kb_unavailable_back = b.as_markup()
+
+    # ── kb_popularity_back — кнопка "Назад" для раздела "Популярность" ──
+    b = InlineKeyboardBuilder()
+    b.button(text="Назад", callback_data="pubg_other")
+    b.adjust(1)
+    _kb_popularity_back = b.as_markup()
+
+    logger.info("Все статические клавиатуры собраны и закешированы")
+
+
+# kb_confirm — единственная динамическая клавиатура
+def kb_confirm(game_id: str, product_key: str):
+    b = InlineKeyboardBuilder()
+    b.button(text="Все верно", callback_data=f"confirm_yes:{game_id}:{product_key}")
+    b.button(text="Неверный ID", callback_data=f"confirm_noid:{product_key}")
+    b.button(text="Я передумал", callback_data="confirm_cancel")
+    b.adjust(1)
+    return b.as_markup()
+
+
+# ─── Запрос статуса платежа к VPS ───
+async def vps_check_payment(order_id: str) -> bool | None:
+    try:
+        session = await get_http_session()
+        async with session.post(
+            f"{VPS_API_URL}/check-payment",
+            json={"secret": API_SECRET, "order_id": order_id},
+        ) as resp:
+            if resp.status != 200:
+                text = await resp.text()
+                logger.error(f"VPS /check-payment вернул HTTP {resp.status}: {text[:200]}")
+                return None
+            data = await resp.json()
+            return bool(data.get("paid", False))
+    except Exception as e:
+        logger.error(f"Ошибка запроса статуса платежа {order_id} к VPS: {e}")
+        return None
+
+
+# ─── Отправка заявки на доставку UC ───
+async def vps_deliver(game_id: str, user_id: int, order_id: str, deliver_index: int, offer_id: str) -> bool:
+    try:
+        session = await get_http_session()
+        async with session.post(
+            f"{VPS_API_URL}/deliver",
+            json={
+                "secret": API_SECRET,
+                "game_id": game_id,
+                "user_id": user_id,
+                "order_id": order_id,
+                "deliver_index": deliver_index,
+                "offer_id": offer_id,
+            },
+        ) as resp:
+            if resp.status != 200:
+                text = await resp.text()
+                logger.error(f"VPS /deliver #{deliver_index} ({offer_id}) вернул HTTP {resp.status}: {text[:200]}")
+                return False
+            data = await resp.json()
+            return bool(data.get("success", False))
+    except Exception as e:
+        logger.error(f"Ошибка доставки UC (заявка #{deliver_index}, offer={offer_id}): {e}")
+        return False
+
+
+# ─── Отправка отзыва в группу ───
+async def send_review_to_group(text: str):
+    if not REVIEW_CHAT_ID:
+        logger.warning("REVIEW_CHAT_ID не задан — отзыв не отправлен в группу")
+        return
+    try:
+        await bot.send_message(REVIEW_CHAT_ID, text)
+        logger.info("Отзыв отправлен в группу отзывов")
+    except Exception as e:
+        logger.error(f"Не удалось отправить отзыв в группу: {e}")
+
+
+# ─── Обработка одного оплаченного заказа ───
+async def process_paid_order(order_id: str, info: dict):
+    """Доставка, списание баланса и уведомление по одному подтверждённому заказу."""
+    deliveries = info.get("deliveries", ["60_uc"])
+    game_id = info.get("game_id", "")
+    delivery_user_id = info.get("user_id", 0)
+    amount_kopecks = info.get("amount_kopecks", 0)
+
+    # Параллельная доставка всех частей заказа
+    tasks = [
+        vps_deliver(game_id, delivery_user_id, order_id, i + 1, offer_id)
+        for i, offer_id in enumerate(deliveries)
+    ]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    all_success = True
+    for i, result in enumerate(results):
+        if isinstance(result, Exception):
+            logger.error(f"Доставка {i+1}/{len(deliveries)} для {order_id} — ошибка: {result}")
+            all_success = False
+        elif result:
+            logger.info(f"Доставка {i+1}/{len(deliveries)} для {order_id} — успешно")
+        else:
+            logger.error(f"Доставка {i+1}/{len(deliveries)} для {order_id} — НЕ удалась")
+            all_success = False
+
+    if not all_success:
+        await bot.send_message(
+            info["chat_id"],
+            "Оплата получена ✅, но при автоматической отправке товара возникла техническая ошибка. "
+            "Поддержка уже уведомлена — товар будет доставлен на ваш аккаунт вручную в ближайшее время. "
+            "Приносим извинения за неудобства 🙏",
+            reply_markup=_kb_back_to_menu,
+        )
+        try:
+            await bot.delete_message(info["chat_id"], info["message_id"])
+        except Exception as e:
+            logger.warning(f"Не удалось удалить сообщение с ссылкой на оплату: {e}")
+        return
+
+    # ─── Списание баланса ТОЛЬКО после успешной доставки ───
+    global kotshop_balance
+    if kotshop_balance is not None:
+        price = amount_kopecks / 100
+        kotshop_balance -= price
+        if kotshop_balance < 0:
+            kotshop_balance = 0
+        save_balance()
+        logger.info(f"Баланс списан на {price}₽, остаток: {kotshop_balance}₽ (заказ {order_id})")
+
+    # Уведомление пользователя об успехе
+    notify_msg = await bot.send_message(info["chat_id"], "Оплата выполнена")
+    await asyncio.sleep(2)
+    try:
+        await notify_msg.delete()
+    except Exception as e:
+        logger.warning(f"Не удалось удалить сообщение «Оплата выполнена»: {e}")
+
+    await asyncio.sleep(1)
+    try:
+        await bot.delete_message(info["chat_id"], info["message_id"])
+    except Exception as e:
+        logger.warning(f"Не удалось удалить сообщение с ссылкой на оплату: {e}")
+
+    await bot.send_message(
+        info["chat_id"],
+        REVIEW_PROMPT_TEXT,
+        reply_markup=_kb_review,
+    )
+
+
+# ─── Фоновая задача — проверка и обработка платежей ───
+async def check_payments_loop():
+    logger.info("Запущен цикл проверки платежей (интервал 15 сек, таймаут 600 сек)")
+    while True:
+        await asyncio.sleep(15)
+        now = time.time()
+        to_remove = []
+        to_check = []
+
+        # 1) Разделяем на истёкшие и активные
+        for order_id, info in list(pending_payments.items()):
+            if now - info["created_at"] > PAYMENT_TIMEOUT:
+                logger.info(f"Платёж {order_id} истёк по таймауту (10 мин)")
+                await bot.send_message(
+                    info["chat_id"],
+                    "Похоже, платёж прервался. Ничего страшного — "
+                    "просто создайте заказ ещё раз, и сможете оплатить.",
+                    reply_markup=_kb_back_to_menu,
+                )
+                await asyncio.sleep(1)
+                try:
+                    await bot.delete_message(info["chat_id"], info["message_id"])
+                except Exception as e:
+                    logger.warning(f"Не удалось удалить сообщение {info['message_id']}: {e}")
+                to_remove.append(order_id)
+            else:
+                to_check.append((order_id, info))
+
+        # 2) Конкурентная проверка статусов всех активных платежей
+        if to_check:
+            check_tasks = [vps_check_payment(oid) for oid, _ in to_check]
+            results = await asyncio.gather(*check_tasks)
+
+            confirmed = []
+            for (order_id, info), paid in zip(to_check, results):
+                if paid is None or not paid:
+                    continue
+                logger.info(f"Платёж {order_id} подтверждён (VPS: paid=true)")
+                confirmed.append((order_id, info))
+                to_remove.append(order_id)
+
+            # 3) Конкурентная обработка всех подтверждённых заказов
+            if confirmed:
+                process_tasks = [
+                    process_paid_order(oid, info) for oid, info in confirmed
+                ]
+                await asyncio.gather(*process_tasks, return_exceptions=True)
+
+        # 4) Очистка
+        if to_remove:
+            for order_id in to_remove:
+                pending_payments.pop(order_id, None)
+            save_pending_to_file()
+
+
+# ─── Вспомогательная функция ───
+async def answer_and_delete(callback, text, reply_markup=None):
+    await callback.message.answer(text, reply_markup=reply_markup)
+    await asyncio.sleep(1)
+    try:
+        await callback.message.delete()
+    except Exception as e:
+        logger.warning(f"Не удалось удалить сообщение {callback.message.message_id}: {e}")
+
+
+# ─── Хендлеры ───
+@dp.message(Command("start"))
+async def cmd_start(message):
+    logger.info(f"/start от user_id={message.from_user.id}, username={message.from_user.username}")
+    await message.answer(WELCOME_TEXT, reply_markup=_kb_start)
+
+
+# ─── БАЛАНС: команда установки баланса ───
+@dp.message(F.text.startswith("KotShopBalans="), StateFilter(None))
+async def cmd_set_balance(message, state: FSMContext):
+    if message.from_user.id not in ADMIN_IDS:
+        return
+
+    try:
+        value = float(message.text.split("=", 1)[1].strip())
+    except (ValueError, IndexError):
+        await message.answer("❌ Неверный формат. Пример: `KotShopBalans=5000`")
+        return
+
+    if value < 0:
+        await message.answer("❌ Баланс не может быть отрицательным.")
+        return
+
+    global kotshop_balance
+    kotshop_balance = value
+    save_balance()
+    logger.info(f"Админ {message.from_user.id} установил баланс: {kotshop_balance}₽")
+    await message.answer(
+        f"✅ Баланс установлен: {kotshop_balance}₽\n"
+        f"Пользователи могут покупать товары, пока общая сумма не достигнет этого значения."
+    )
+
+
+# ─── БАЛАНС: команда проверки баланса ───
+@dp.message(F.text == "KotShopSee", StateFilter(None))
+async def cmd_see_balance(message, state: FSMContext):
+    if message.from_user.id not in ADMIN_IDS:
+        return
+
+    if kotshop_balance is None:
+        await message.answer("📊 Баланс не задан — лимит отключён (покупки не ограничены).")
+    else:
+        await message.answer(f"📊 Текущий остаток баланса: {kotshop_balance}₽")
+
+
+# ─── Текстовые команды по ключевым словам ───
+
+@dp.message(lambda m: m.text and m.text.lower().strip() in MENU_KW, StateFilter(None))
+async def kw_menu(message, state: FSMContext):
+    await state.clear()
+    await message.answer(MENU_TEXT, reply_markup=_kb_menu)
+
+
+@dp.message(lambda m: m.text and m.text.lower().strip() in BUY_KW, StateFilter(None))
+async def kw_buy(message, state: FSMContext):
+    await state.clear()
+    await message.answer(
+        "Выберите нужную игру или напишите название игры для получения раздела покупки",
+        reply_markup=_kb_buy,
+    )
+
+
+@dp.message(lambda m: m.text and m.text.lower().strip() in PUBG_KW, StateFilter(None))
+async def kw_pubg(message, state: FSMContext):
+    await state.clear()
+    await message.answer("Выберите нужный раздел", reply_markup=_kb_pubg)
+
+
+@dp.message(lambda m: m.text and m.text.lower().strip() in UC_KW, StateFilter(None))
+async def kw_uc(message, state: FSMContext):
+    await state.clear()
+    await message.answer("Выберите количество UC", reply_markup=_kb_pubg_products)
+
+
+@dp.message(lambda m: m.text and m.text.lower().strip() in SUPPORT_KW, StateFilter(None))
+async def kw_support(message, state: FSMContext):
+    await state.clear()
+    await message.answer(SUPPORT_TEXT, reply_markup=_kb_support)
+
+
+@dp.message(F.text == "тест", StateFilter(None))
+async def cmd_test_purchase(message, state: FSMContext):
+    logger.info(f"ТЕСТ: имитация успешной оплаты от user_id={message.from_user.id}")
+    await state.clear()
+
+    notify_msg = await message.answer("Оплата выполнена")
+    await asyncio.sleep(2)
+    try:
+        await notify_msg.delete()
+    except Exception as e:
+        logger.warning(f"Не удалось удалить тестовое сообщение «Оплата выполнена»: {e}")
+
+    await message.answer(REVIEW_PROMPT_TEXT, reply_markup=_kb_review)
+
+
+@dp.message(F.text == "Отзыв", StateFilter(None))
+async def cmd_review(message, state: FSMContext):
+    await state.clear()
+    await message.answer(REVIEW_PROMPT_TEXT, reply_markup=_kb_review)
+
+
+@dp.callback_query(F.data == "menu")
+async def cb_menu(callback, state: FSMContext):
+    await state.clear()
+    await answer_and_delete(callback, MENU_TEXT, _kb_menu)
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "oferta")
+async def cb_oferta(callback, state: FSMContext):
+    await state.clear()
+    await answer_and_delete(callback, POLICY_TEXT, _kb_policy)
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "back_start")
+async def cb_back_start(callback, state: FSMContext):
+    await state.clear()
+    await answer_and_delete(callback, WELCOME_TEXT, _kb_start)
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "buy")
+async def cb_buy(callback, state: FSMContext):
+    await state.clear()
+    await answer_and_delete(
+        callback,
+        "Выберите нужную игру или напишите название игры для получения раздела покупки",
+        _kb_buy,
+    )
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "support")
+async def cb_support(callback, state: FSMContext):
+    await state.clear()
+    await answer_and_delete(callback, SUPPORT_TEXT, _kb_support)
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "tournament")
+async def cb_tournament(callback, state: FSMContext):
+    await state.clear()
+    await answer_and_delete(callback, "🏆 Турнирный раздел в разработке", _kb_menu)
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "back_menu")
+async def cb_back_menu(callback, state: FSMContext):
+    await state.clear()
+    await answer_and_delete(callback, MENU_TEXT, _kb_menu)
+    await callback.answer()
+
+
+# ── PUBG Mobile ──
+@dp.callback_query(F.data == "pubg")
+async def cb_pubg(callback, state: FSMContext):
+    await state.clear()
+    await answer_and_delete(callback, "Выберите нужный раздел", _kb_pubg)
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "back_buy")
+async def cb_back_buy(callback, state: FSMContext):
+    await state.clear()
+    await answer_and_delete(
+        callback,
+        "Выберите нужную игру или напишите название игры для получения раздела покупки",
+        _kb_buy,
+    )
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "pubg_buy_uc")
+async def cb_pubg_buy_uc(callback, state: FSMContext):
+    await state.clear()
+    await answer_and_delete(callback, "Выберите количество UC", _kb_pubg_products)
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "pubg_other")
+async def cb_pubg_other(callback, state: FSMContext):
+    await state.clear()
+    await answer_and_delete(callback, "Раздел «Другие товары»", _kb_pubg_other)
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "popularity")
+async def cb_popularity(callback, state: FSMContext):
+    await state.clear()
+    await answer_and_delete(callback, POPULARITY_TEXT, _kb_popularity_back)
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "back_pubg")
+async def cb_back_pubg(callback, state: FSMContext):
+    await state.clear()
+    await answer_and_delete(callback, "Выберите нужный раздел", _kb_pubg)
+    await callback.answer()
+
+
+# ── Универсальный обработчик выбора товара ──
+@dp.callback_query(F.data.startswith("pubg_prod:"))
+async def cb_pubg_product(callback, state: FSMContext):
+    product_key = callback.data.split(":")[1]
+    if product_key not in PRODUCTS:
+        logger.warning(f"Неизвестный товар: {product_key}")
+        await callback.answer("Товар не найден")
+        return
+
+    # Проверка, доступен ли товар для покупки
+    if product_key not in ALLOWED_PRODUCTS:
+        await callback.message.answer(PRODUCT_UNAVAILABLE_TEXT, reply_markup=_kb_unavailable_back)
+        await asyncio.sleep(1)
+        try:
+            await callback.message.delete()
+        except Exception:
+            pass
+        await callback.answer()
+        return
+
+    await state.set_state(OrderFlow.waiting_for_id)
+    await state.set_data({"product": product_key})
+    await callback.message.answer("Укажите ваш ID который должен начинаться на 5")
+    await asyncio.sleep(1)
+    try:
+        await callback.message.delete()
+    except Exception as e:
+        logger.warning(f"Не удалось удалить сообщение {callback.message.message_id}: {e}")
+    await callback.answer()
+
+
+@dp.message(OrderFlow.waiting_for_id)
+async def process_game_id(message, state: FSMContext):
+    game_id = message.text.strip()
+
+    if not game_id.isdigit() or not game_id.startswith("5"):
+        logger.warning(f"Неверный game_id от user_id={message.from_user.id}: '{game_id}'")
+        await message.answer(
+            "❌ ID должен состоять только из цифр и начинаться на 5. Попробуйте ещё раз."
+        )
+        return
+
+    data = await state.get_data()
+    product_key = data.get("product", "60uc")
+    product = PRODUCTS.get(product_key, PRODUCTS["60uc"])
+
+    await state.clear()
+    logger.info(f"Получен game_id={game_id} от user_id={message.from_user.id}, product={product_key}")
+    await message.answer(
+        f"Вы выбрали товар {product['name']} стоимостью в {product['price']}₽\n"
+        f"Ваш ID: {game_id}",
+        reply_markup=kb_confirm(game_id, product_key)
+    )
+
+
+# ── Подтверждение заказа → создание платежа ──
+@dp.callback_query(F.data.startswith("confirm_yes"))
+async def cb_confirm_yes(callback, state: FSMContext):
+    await state.clear()
+    parts = callback.data.split(":")
+    game_id = parts[1]
+    product_key = parts[2] if len(parts) > 2 else "60uc"
+    product = PRODUCTS.get(product_key, PRODUCTS["60uc"])
+    user_id = callback.from_user.id
+    amount_kopecks = product["amount_kopecks"]
+    total_price = product["price"]
+    deliveries = product["deliveries"]
+
+    # ─── БАЛАНС: проверка остатка перед созданием платежа ───
+    if kotshop_balance is not None and total_price > kotshop_balance:
+        logger.info(
+            f"Отказ в покупке user_id={user_id}: товар {total_price}₽ > баланс {kotshop_balance}₽"
+        )
+        await callback.message.answer(BALANCE_INSUFFICIENT_TEXT)
+        await asyncio.sleep(1)
+        try:
+            await callback.message.delete()
+        except Exception:
+            pass
+        await callback.answer()
+        return
+
+    logger.info(
+        f"Создание платежа: user_id={user_id}, game_id={game_id}, "
+        f"product={product_key}, amount={amount_kopecks} коп., deliveries={deliveries}"
+    )
+
+    order_id = f"order-{user_id}-{int(time.time())}"
+    logger.info(f"Создание заказа: order_id={order_id}")
+
+    try:
+        session = await get_http_session()
+        async with session.post(
+            f"{VPS_API_URL}/create-payment",
+            json={
+                "secret": API_SECRET,
+                "order_id": order_id,
+                "amount_kopecks": amount_kopecks,
+                "game_id": game_id,
+                "user_id": user_id,
+                "description": f"Покупка {product['name']} для PUBG Mobile. Игровой ID: {game_id}",
+                "email": "noreply@kotshop241.ru",
+            },
+        ) as resp:
+            logger.info(f"Ответ бэкенда: HTTP {resp.status}")
+            try:
+                data = await resp.json()
+            except Exception as e:
+                raw_text = await resp.text()
+                logger.error(f"Не удалось распарсить JSON от бэкенда: {e}")
+                logger.error(f"Сырой ответ: {raw_text[:500]}")
+                await callback.message.answer("Сервер вернул некорректный ответ. Попробуйте позже.")
+                await asyncio.sleep(1)
+                try:
+                    await callback.message.delete()
+                except Exception:
+                    pass
+                await callback.answer()
+                return
+
+        logger.info(f"Тело ответа бэкенда: {data}")
+
+        if not data.get("success"):
+            err = data.get("error", "неизвестная ошибка")
+            logger.error(f"Бэкенд отклонил платёж: {data}")
+            await callback.message.answer(
+                f"❌ Не удалось создать платёж: {err}\n\n"
+                f"Попробуйте позже или обратитесь в поддержку: @kotshop241_support"
+            )
+            await asyncio.sleep(1)
+            try:
+                await callback.message.delete()
+            except Exception:
+                pass
+            await callback.answer()
+            return
+
+    except aiohttp.ClientConnectorError as e:
+        logger.error(f"Не удалось подключиться к VPS-бэкенду: {e}")
+        logger.error(f"Проверьте VPS_API_URL={VPS_API_URL} и открыт ли порт 8080 на VPS")
+        await callback.message.answer(
+            "❌ Не удалось подключиться к серверу оплаты.\n"
+            "Проверьте, что VPS запущен и порт 8080 открыт.\n\n"
+            "Поддержка: @kotshop241_support"
+        )
+        await asyncio.sleep(1)
+        try:
+            await callback.message.delete()
+        except Exception:
+            pass
+        await callback.answer()
+        return
+
+    except asyncio.TimeoutError:
+        logger.error(f"Таймаут при запросе к VPS-бэкенду (15 сек). URL: {VPS_API_URL}")
+        await callback.message.answer("❌ Сервер оплаты не ответил вовремя. Попробуйте позже.")
+        await asyncio.sleep(1)
+        try:
+            await callback.message.delete()
+        except Exception:
+            pass
+        await callback.answer()
+        return
+
+    except Exception as e:
+        logger.error(f"Непредвиденная ошибка при создании платежа: {e}")
+        logger.error(traceback.format_exc())
+        await callback.message.answer(
+            "❌ Произошла ошибка. Попробуйте позже или обратитесь в поддержку: @kotshop241_support"
+        )
+        await asyncio.sleep(1)
+        try:
+            await callback.message.delete()
+        except Exception:
+            pass
+        await callback.answer()
+        return
+
+    b = InlineKeyboardBuilder()
+    b.button(text=f"Оплатить {total_price}₽", url=data["payment_url"])
+    b.adjust(1)
+
+    payment_text = (
+        f"Заказ #{order_id}\n"
+        f"Товар: {product['name']}\n"
+        f"Ваш ID: {game_id}\n"
+        f"Сумма: {total_price}₽\n\n"
+        f"Нажмите «Оплатить», чтобы завершить покупку."
+    )
+
+    payment_msg = await callback.message.answer(payment_text, reply_markup=b.as_markup())
+    await asyncio.sleep(1)
+    try:
+        await callback.message.delete()
+    except Exception as e:
+        logger.warning(f"Не удалось удалить сообщение {callback.message.message_id}: {e}")
+
+    pending_payments[order_id] = {
+        "user_id": user_id,
+        "chat_id": callback.message.chat.id,
+        "message_id": payment_msg.message_id,
+        "game_id": game_id,
+        "product_name": product["name"],
+        "payment_id": data.get("payment_id", ""),
+        "amount_kopecks": amount_kopecks,
+        "created_at": time.time(),
+        "payment_url": data["payment_url"],
+        "deliveries": deliveries,
+    }
+    save_pending_to_file()
+    logger.info(f"Заказ {order_id} добавлен в очередь мониторинга (deliveries={deliveries})")
+
+    await callback.answer()
+
+
+@dp.callback_query(F.data.startswith("confirm_noid"))
+async def cb_confirm_noid(callback, state: FSMContext):
+    parts = callback.data.split(":")
+    product_key = parts[1] if len(parts) > 1 else "60uc"
+    await state.set_state(OrderFlow.waiting_for_id)
+    await state.set_data({"product": product_key})
+    await callback.message.answer("Укажите ваш ID который должен начинаться на 5")
+    await asyncio.sleep(1)
+    try:
+        await callback.message.delete()
+    except Exception as e:
+        logger.warning(f"Не удалось удалить сообщение {callback.message.message_id}: {e}")
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "confirm_cancel")
+async def cb_confirm_cancel(callback, state: FSMContext):
+    await state.clear()
+    await answer_and_delete(callback, "Выберите количество UC", _kb_pubg_products)
+    await callback.answer()
+
+
+# ── Раздел отзывов ──
+@dp.callback_query(F.data == "review_start")
+async def cb_review_start(callback, state: FSMContext):
+    await state.set_state(OrderFlow.waiting_for_rating)
+    await callback.message.answer(REVIEW_RATING_TEXT)
+    await asyncio.sleep(1)
+    try:
+        await callback.message.delete()
+    except Exception as e:
+        logger.warning(f"Не удалось удалить сообщение {callback.message.message_id}: {e}")
+    await callback.answer()
+
+
+@dp.message(OrderFlow.waiting_for_rating)
+async def process_rating(message, state: FSMContext):
+    text = message.text.strip()
+    if not text.isdigit() or not (1 <= int(text) <= 10):
+        await message.answer("❌ Пожалуйста, отправьте число от 1 до 10.")
+        return
+
+    rating = int(text)
+    stars = "⭐" * rating
+    await state.set_state(None)
+    await state.set_data({"rating": rating})
+    await message.answer(
+        f"{stars}\n\nЗдесь будет ваш отзыв, напишите его",
+        reply_markup=_kb_review_rating
+    )
+
+
+@dp.callback_query(F.data == "review_write")
+async def cb_review_write(callback, state: FSMContext):
+    await state.set_state(OrderFlow.waiting_for_review_text)
+    await callback.message.answer(REVIEW_WRITE_TEXT)
+    await asyncio.sleep(1)
+    try:
+        await callback.message.delete()
+    except Exception as e:
+        logger.warning(f"Не удалось удалить сообщение {callback.message.message_id}: {e}")
+    await callback.answer()
+
+
+@dp.message(OrderFlow.waiting_for_review_text)
+async def process_review_text(message, state: FSMContext):
+    data = await state.get_data()
+    rating = data.get("rating", 5)
+    stars = "⭐" * rating
+    review_text = message.text.strip()
+
+    await state.set_state(None)
+    await state.set_data({"rating": rating, "review_text": review_text})
+    await message.answer(
+        f"{stars}\n\n{review_text}",
+        reply_markup=_kb_review_confirm
+    )
+
+
+@dp.callback_query(F.data == "review_send")
+async def cb_review_send(callback, state: FSMContext):
+    data = await state.get_data()
+    rating = data.get("rating", 5)
+    review_text = data.get("review_text", "")
+    stars = "⭐" * rating
+
+    full_review = f"{stars}\n\n{review_text}"
+    await send_review_to_group(full_review)
+
+    await state.clear()
+    await callback.message.answer("Спасибо за ваш отзыв! 💙", reply_markup=_kb_menu)
+    await asyncio.sleep(1)
+    try:
+        await callback.message.delete()
+    except Exception as e:
+        logger.warning(f"Не удалось удалить сообщение {callback.message.message_id}: {e}")
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "review_edit_text")
+async def cb_review_edit_text(callback, state: FSMContext):
+    data = await state.get_data()
+    rating = data.get("rating", 5)
+    await state.set_state(OrderFlow.waiting_for_review_text)
+    await state.set_data({"rating": rating})
+    await callback.message.answer(REVIEW_WRITE_TEXT)
+    await asyncio.sleep(1)
+    try:
+        await callback.message.delete()
+    except Exception as e:
+        logger.warning(f"Не удалось удалить сообщение {callback.message.message_id}: {e}")
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "review_change_rating")
+async def cb_review_change_rating(callback, state: FSMContext):
+    data = await state.get_data()
+    review_text = data.get("review_text", "")
+    await state.set_state(OrderFlow.waiting_for_rating)
+    await state.set_data({"review_text": review_text})
+    await callback.message.answer(REVIEW_RATING_TEXT)
+    await asyncio.sleep(1)
+    try:
+        await callback.message.delete()
+    except Exception as e:
+        logger.warning(f"Не удалось удалить сообщение {callback.message.message_id}: {e}")
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "review_to_menu")
+async def cb_review_to_menu(callback, state: FSMContext):
+    await state.clear()
+    await callback.message.answer(MENU_TEXT, reply_markup=_kb_menu)
+    await asyncio.sleep(1)
+    try:
+        await callback.message.delete()
+    except Exception as e:
+        logger.warning(f"Не удалось удалить сообщение {callback.message.message_id}: {e}")
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "review_send_stars_only")
+async def cb_review_send_stars_only(callback, state: FSMContext):
+    data = await state.get_data()
+    rating = data.get("rating", 5)
+    stars = "⭐" * rating
+
+    await send_review_to_group(stars)
+    await state.clear()
+    await callback.message.answer("Спасибо за вашу оценку! 💙", reply_markup=_kb_menu)
+    await asyncio.sleep(1)
+    try:
+        await callback.message.delete()
+    except Exception as e:
+        logger.warning(f"Не удалось удалить сообщение {callback.message.message_id}: {e}")
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "review_cancel")
+async def cb_review_cancel(callback, state: FSMContext):
+    await state.clear()
+    await answer_and_delete(callback, MENU_TEXT, _kb_menu)
+    await callback.answer()
+
+
+# ─── Глобальный обработчик ошибок ───
+@dp.error()
+async def on_error(event, exception, *args, **kwargs):
+    logger.error(f"Необработанная ошибка в хендлере: {exception}")
+    logger.error(traceback.format_exc())
+    return True
+
+
+# ─── Main ───
+async def main():
+    logger.info("BotHost бот запущен")
+    logger.info(f"VPS_API_URL = {VPS_API_URL}")
+    logger.info(f"REVIEW_CHAT_ID = {REVIEW_CHAT_ID if REVIEW_CHAT_ID else '(не задан)'}")
+
+    init_keyboards()
+
+    load_pending_from_file()
+    load_balance()
+
+    asyncio.create_task(check_payments_loop())
+    await dp.start_polling(bot)
+
+    if http_session and not http_session.closed:
+        await http_session.close()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
