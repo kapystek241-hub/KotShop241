@@ -523,6 +523,36 @@ async def process_paid_order(order_id: str, info: dict):
     )
 
 
+# ─── НОВОЕ: Тестовая обработка «оплаченного» заказа (без доставки) ───
+async def process_paid_order_test(chat_id: int, user_id: int):
+    """
+    Имитирует полную логику process_paid_order, но НЕ отправляет товар на VPS.
+    Списание баланса НЕ производится — это тест.
+    Удаляет сообщение-«кнопку оплаты» (если есть), показывает «Оплата выполнена»,
+    затем форму отзыва. Всё как при реальной оплате.
+    """
+    test_order_id = f"test-{user_id}-{int(time.time())}"
+    logger.info(f"ТЕСТ: запуск тестовой логики оплаты для user_id={user_id}, order_id={test_order_id}")
+
+    # ── Показ «Оплата выполнена» (как в process_paid_order) ──
+    notify_msg = await bot.send_message(chat_id, "Оплата выполнена")
+    await asyncio.sleep(2)
+    try:
+        await notify_msg.delete()
+    except Exception as e:
+        logger.warning(f"ТЕСТ: не удалось удалить сообщение «Оплата выполнена»: {e}")
+
+    await asyncio.sleep(1)
+
+    # ── Показ формы отзыва (как в process_paid_order) ──
+    await bot.send_message(
+        chat_id,
+        REVIEW_PROMPT_TEXT,
+        reply_markup=_kb_review,
+    )
+    logger.info(f"ТЕСТ: форма отзыва показана для user_id={user_id}")
+
+
 # ─── Фоновая задача — проверка и обработка платежей ───
 async def check_payments_loop():
     logger.info("Запущен цикл проверки платежей (интервал 15 сек, таймаут 600 сек)")
@@ -681,6 +711,17 @@ async def cmd_test_purchase(message, state: FSMContext):
         logger.warning(f"Не удалось удалить тестовое сообщение «Оплата выполнена»: {e}")
 
     await message.answer(REVIEW_PROMPT_TEXT, reply_markup=_kb_review)
+
+
+# ─── НОВОЕ: Тестовый блок для админа — полная логика после оплаты без доставки ───
+@dp.message(F.text == "Тест", StateFilter(None))
+async def cmd_test_full_flow(message, state: FSMContext):
+    if message.from_user.id not in ADMIN_IDS:
+        return
+
+    logger.info(f"ТЕСТ (полная логика): запуск от админа user_id={message.from_user.id}")
+    await state.clear()
+    await process_paid_order_test(message.chat.id, message.from_user.id)
 
 
 @dp.message(F.text == "Отзыв", StateFilter(None))
