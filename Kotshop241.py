@@ -29,8 +29,12 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 VPS_API_URL = os.getenv("VPS_API_URL")
 API_SECRET = os.getenv("API_SECRET", "change-me")
 
-# ─── Группа отзывов по умолчанию ───
-REVIEW_CHAT_ID = os.getenv("REVIEW_CHAT_ID", "@otzivkotshop241")
+# ─── Группа отзывов ───
+_review_chat_raw = os.getenv("REVIEW_CHAT_ID", "@otzivkotshop241")
+try:
+    REVIEW_CHAT_ID = int(_review_chat_raw)
+except ValueError:
+    REVIEW_CHAT_ID = _review_chat_raw
 
 # ─── БАЛАНС: список ID администраторов (через запятую в .env) ───
 ADMIN_IDS = set()
@@ -458,16 +462,17 @@ async def vps_deliver(game_id: str, user_id: int, order_id: str, deliver_index: 
         return False
 
 
-# ─── Отправка отзыва в группу ───
-async def send_review_to_group(text: str):
+# ─── ИЗМЕНЕНО: Пересылка отзыва в группу (вместо send_message) ───
+async def forward_review_to_group(from_chat_id: int, message_id: int):
+    """Пересылает сообщение пользователя в группу отзывов."""
     if not REVIEW_CHAT_ID:
         logger.warning("REVIEW_CHAT_ID не задан — отзыв не отправлен в группу")
         return
     try:
-        await bot.send_message(REVIEW_CHAT_ID, text)
-        logger.info("Отзыв отправлен в группу отзывов")
+        await bot.forward_message(REVIEW_CHAT_ID, from_chat_id, message_id)
+        logger.info(f"Сообщение {message_id} из чата {from_chat_id} переслано в группу отзывов")
     except Exception as e:
-        logger.error(f"Не удалось отправить отзыв в группу: {e}")
+        logger.error(f"Не удалось переслать отзыв в группу: {e}")
 
 
 # ─── Обработка одного оплаченного заказа ───
@@ -1034,6 +1039,7 @@ async def cb_review_start(callback, state: FSMContext):
     await callback.answer()
 
 
+# ── ИЗМЕНЕНО: сохраняем message_id сообщения с оценкой ──
 @dp.message(OrderFlow.waiting_for_rating)
 async def process_rating(message, state: FSMContext):
     text = message.text.strip()
@@ -1044,7 +1050,12 @@ async def process_rating(message, state: FSMContext):
     rating = int(text)
     stars = "⭐" * rating
     await state.set_state(None)
-    await state.set_data({"rating": rating})
+    # Сохраняем оценку и ID исходного сообщения пользователя для пересылки
+    await state.update_data({
+        "rating": rating,
+        "rating_message_id": message.message_id,
+        "rating_chat_id": message.chat.id,
+    })
     await message.answer(
         f"{stars}\n\nЗдесь будет ваш отзыв, напишите его",
         reply_markup=_kb_review_rating
@@ -1063,6 +1074,7 @@ async def cb_review_write(callback, state: FSMContext):
     await callback.answer()
 
 
+# ── ИЗМЕНЕНО: сохраняем message_id сообщения с текстом отзыва ──
 @dp.message(OrderFlow.waiting_for_review_text)
 async def process_review_text(message, state: FSMContext):
     data = await state.get_data()
@@ -1071,13 +1083,20 @@ async def process_review_text(message, state: FSMContext):
     review_text = message.text.strip()
 
     await state.set_state(None)
-    await state.set_data({"rating": rating, "review_text": review_text})
+    # Сохраняем текст отзыва и ID исходного сообщения для пересылки
+    await state.update_data({
+        "rating": rating,
+        "review_text": review_text,
+        "review_message_id": message.message_id,
+        "review_chat_id": message.chat.id,
+    })
     await message.answer(
         f"{stars}\n\n{review_text}",
         reply_markup=_kb_review_confirm
     )
 
 
+# ── ИЗМЕНЕНО: пересылка сообщений вместо отправки текста ──
 @dp.callback_query(F.data == "review_send")
 async def cb_review_send(callback, state: FSMContext):
     data = await state.get_data()
@@ -1085,8 +1104,17 @@ async def cb_review_send(callback, state: FSMContext):
     review_text = data.get("review_text", "")
     stars = "⭐" * rating
 
-    full_review = f"{stars}\n\n{review_text}"
-    await send_review_to_group(full_review)
+    # Пересылаем исходное сообщение с оценкой
+    rating_msg_id = data.get("rating_message_id")
+    rating_chat_id = data.get("rating_chat_id")
+    if rating_msg_id and rating_chat_id:
+        await forward_review_to_group(rating_chat_id, rating_msg_id)
+
+    # Пересылаем исходное сообщение с текстом отзыва
+    review_msg_id = data.get("review_message_id")
+    review_chat_id = data.get("review_chat_id")
+    if review_msg_id and review_chat_id:
+        await forward_review_to_group(review_chat_id, review_msg_id)
 
     await state.clear()
     await callback.message.answer("Спасибо за ваш отзыв! 💙", reply_markup=_kb_menu)
@@ -1103,7 +1131,8 @@ async def cb_review_edit_text(callback, state: FSMContext):
     data = await state.get_data()
     rating = data.get("rating", 5)
     await state.set_state(OrderFlow.waiting_for_review_text)
-    await state.set_data({"rating": rating})
+    # Сохраняем оценку и её message_id, текст отзыва будет перезаписан
+    await state.update_data({"rating": rating})
     await callback.message.answer(REVIEW_WRITE_TEXT)
     await asyncio.sleep(1)
     try:
@@ -1118,7 +1147,8 @@ async def cb_review_change_rating(callback, state: FSMContext):
     data = await state.get_data()
     review_text = data.get("review_text", "")
     await state.set_state(OrderFlow.waiting_for_rating)
-    await state.set_data({"review_text": review_text})
+    # Сохраняем текст отзыва и его message_id, оценка будет перезаписана
+    await state.update_data({"review_text": review_text})
     await callback.message.answer(REVIEW_RATING_TEXT)
     await asyncio.sleep(1)
     try:
@@ -1140,13 +1170,19 @@ async def cb_review_to_menu(callback, state: FSMContext):
     await callback.answer()
 
 
+# ── ИЗМЕНЕНО: пересылка только сообщения с оценкой ──
 @dp.callback_query(F.data == "review_send_stars_only")
 async def cb_review_send_stars_only(callback, state: FSMContext):
     data = await state.get_data()
     rating = data.get("rating", 5)
     stars = "⭐" * rating
 
-    await send_review_to_group(stars)
+    # Пересылаем исходное сообщение с оценкой
+    rating_msg_id = data.get("rating_message_id")
+    rating_chat_id = data.get("rating_chat_id")
+    if rating_msg_id and rating_chat_id:
+        await forward_review_to_group(rating_chat_id, rating_msg_id)
+
     await state.clear()
     await callback.message.answer("Спасибо за вашу оценку! 💙", reply_markup=_kb_menu)
     await asyncio.sleep(1)
