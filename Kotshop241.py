@@ -255,4 +255,24 @@ def load_pending_from_file():
         pending_payments = loaded
         logger.info(f"Загружено {len(loaded)} ожидающих платежей из файла {PENDING_FILE}")
     except FileNotFoundError:
-        logger.info(f"Файл {PENDING_FILE} не найден — старту
+        logger.info(f"Файл {PENDING_FILE} не найден — стартуем с пустым списком")
+    except Exception as e:
+        logger.error(f"Не удалось загрузить pending_payments из файла: {e}")
+
+
+# ─── БАЛАНС: сохранение и загрузка ───
+def save_balance():
+    try:
+        with open(BALANCE_FILE, "w", encoding="utf-8") as f:
+            json.dump({"balance": kotshop_balance}, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        logger.error(f"Не удалось сохранить баланс в файл: {e}")
+
+
+def load_balance():
+    global kotshop_balance
+    try:
+        with open(BALANCE_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        kotshop_balance = data.get("balance")
+        logger.info(f"
