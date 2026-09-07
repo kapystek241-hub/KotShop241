@@ -71,12 +71,18 @@ async def get_http_session() -> aiohttp.ClientSession:
     return http_session
 
 
+# ─── Вспомогательная функция: зачёркивание текста кнопки ───
+def strikethrough(text: str) -> str:
+    """Добавляет Unicode combining strikethrough (U+0336) после каждого символа."""
+    return "".join(c + "\u0336" for c in text)
+
+
 # ─── Каталог товаров ───
 # Разрешённые к покупке товары (остальные покажут сообщение о недоступности)
 ALLOWED_PRODUCTS = {
     "60uc", "120uc", "180uc", "240uc",
-    "325uc", "385uc", "445uc",
-    "1800uc", "1920uc", "2125uc",
+    "660uc", "720uc",
+    "1800uc", "1920uc", "2460uc",
 }
 
 PRODUCTS = {
@@ -192,7 +198,8 @@ BALANCE_INSUFFICIENT_TEXT = (
 )
 
 PRODUCT_UNAVAILABLE_TEXT = (
-    "На данный момент поставщик убрал возможность покупки этих товаров"
+    "Пока что поставщик не предоставляет услуги связанные с этим номиналом, "
+    "доступны не зачеркнутые товары"
 )
 
 POPULARITY_TEXT = (
@@ -363,10 +370,15 @@ def init_keyboards():
     b.adjust(1)
     _kb_pubg = b.as_markup()
 
+    # ── Клавиатура товаров: доступные — обычный текст, недоступные — зачёркнутые ──
     b = InlineKeyboardBuilder()
     for key in PRODUCT_GRID:
         product = PRODUCTS[key]
-        b.button(text=f"UC {product['name'].split(' ')[0]} — {product['price']}₽", callback_data=f"pubg_prod:{key}")
+        label = f"UC {product['name'].split(' ')[0]} — {product['price']}₽"
+        if key in ALLOWED_PRODUCTS:
+            b.button(text=label, callback_data=f"pubg_prod:{key}")
+        else:
+            b.button(text=strikethrough(label), callback_data=f"pubg_prod:{key}")
     b.button(text="Назад", callback_data="back_pubg")
     b.adjust(2, 2, 2, 2, 2, 2, 2, 2, 1, 1)
     _kb_pubg_products = b.as_markup()
