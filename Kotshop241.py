@@ -71,20 +71,7 @@ async def get_http_session() -> aiohttp.ClientSession:
     return http_session
 
 
-# ─── Вспомогательная функция: зачёркивание текста кнопки ───
-def strikethrough(text: str) -> str:
-    """Добавляет Unicode combining strikethrough (U+0336) после каждого символа."""
-    return "".join(c + "\u0336" for c in text)
-
-
 # ─── Каталог товаров ───
-# Разрешённые к покупке товары (остальные покажут сообщение о недоступности)
-ALLOWED_PRODUCTS = {
-    "60uc", "120uc", "180uc", "240uc",
-    "660uc", "720uc",
-    "1800uc", "1920uc", "2460uc",
-}
-
 PRODUCTS = {
     "60uc":   {"name": "60 UC",   "price": 85,   "amount_kopecks": 85   * 100, "deliveries": ["60_uc"]},
     "120uc":  {"name": "120 UC",  "price": 171,  "amount_kopecks": 171  * 100, "deliveries": ["60_uc", "60_uc"]},
@@ -370,15 +357,12 @@ def init_keyboards():
     b.adjust(1)
     _kb_pubg = b.as_markup()
 
-    # ── Клавиатура товаров: доступные — обычный текст, недоступные — зачёркнутые ──
+    # ── Клавиатура товаров: все товары — обычный текст ──
     b = InlineKeyboardBuilder()
     for key in PRODUCT_GRID:
         product = PRODUCTS[key]
         label = f"UC {product['name'].split(' ')[0]} — {product['price']}₽"
-        if key in ALLOWED_PRODUCTS:
-            b.button(text=label, callback_data=f"pubg_prod:{key}")
-        else:
-            b.button(text=strikethrough(label), callback_data=f"pubg_prod:{key}")
+        b.button(text=label, callback_data=f"pubg_prod:{key}")
     b.button(text="Назад", callback_data="back_pubg")
     b.adjust(2, 2, 2, 2, 2, 2, 2, 2, 1, 1)
     _kb_pubg_products = b.as_markup()
@@ -887,16 +871,6 @@ async def cb_pubg_product(callback, state: FSMContext):
     if product_key not in PRODUCTS:
         logger.warning(f"Неизвестный товар: {product_key}")
         await callback.answer("Товар не найден")
-        return
-
-    if product_key not in ALLOWED_PRODUCTS:
-        await callback.message.answer(PRODUCT_UNAVAILABLE_TEXT, reply_markup=_kb_unavailable_back)
-        await asyncio.sleep(1)
-        try:
-            await callback.message.delete()
-        except Exception:
-            pass
-        await callback.answer()
         return
 
     await state.set_state(OrderFlow.waiting_for_id)
